@@ -18,6 +18,8 @@ HELP.md
 *.iws
 *.iml
 *.ipr
+/target
+/src/test
 
 ### NetBeans ###
 /nbproject/private/
