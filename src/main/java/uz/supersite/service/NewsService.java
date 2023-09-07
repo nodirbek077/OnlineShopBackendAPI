@@ -51,7 +51,7 @@ public class NewsService {
         if(optionalCategory.isPresent()){
             return optionalCategory.get();
         }else {
-            throw new ItemNotFoundException("category not found id " + id);
+            throw new ItemNotFoundException("Category not found with id " + id);
         }
     }
 
