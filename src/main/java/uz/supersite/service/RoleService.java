@@ -2,18 +2,10 @@ package uz.supersite.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uz.supersite.ResponseEntity;
 import uz.supersite.entity.Role;
-import uz.supersite.entity.User;
-import uz.supersite.exception.RoleNotFoundException;
-import uz.supersite.exception.UserNotFoundException;
 import uz.supersite.repository.RoleRepository;
-import uz.supersite.repository.UserRepository;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class RoleService {
@@ -24,33 +16,32 @@ public class RoleService {
         return (List<Role>) roleRepository.findAll();
     }
 
-    public ResponseEntity addRole(Role role){
-        roleRepository.save(role);
-        return new ResponseEntity(0, "Role saved!");
+    public Role addRole(Role role){
+        return  roleRepository.save(role);
     }
 
-    public ResponseEntity updateRole(Role role, Integer id) throws RoleNotFoundException {
+    public Role updateRole(Role role, Integer id) {
         Optional<Role> optionalRole = roleRepository.findById(id);
-
-        if(optionalRole.isEmpty()) {
-            throw  new RoleNotFoundException("Could not found any role with ID " + id);
+        if(optionalRole.isPresent()){
+            Role roleInDb = optionalRole.get();
+            roleInDb.setName(role.getName());
+            roleInDb.setDescription(role.getDescription());
+            return roleRepository.save(roleInDb);
         }
-
-        Role roleInDb = optionalRole.get();
-        roleInDb.setName(role.getName());
-        roleInDb.setDescription(role.getDescription());
-        roleRepository.save(roleInDb);
-
-        return new ResponseEntity(0, "Success");
+        return null;
     }
 
-    public ResponseEntity delete(Integer id) throws  RoleNotFoundException {
-        Long countById = roleRepository.countById(id);
-        if(countById == null || countById == 0) {
-            throw new RoleNotFoundException("Could not found any role with ID " + id);
+    public boolean delete(Integer id){
+        try {
+            roleRepository.deleteById(id);
+            return true;
+        }catch (Exception e){
+            return false;
         }
-        roleRepository.deleteById(id);
-        return new ResponseEntity(0, "Success");
     }
 
+    public Role getRole(Integer id){
+        Optional<Role> optionalRole = roleRepository.findById(id);
+        return optionalRole.orElse(null);
+    }
 }

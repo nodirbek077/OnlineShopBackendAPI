@@ -1,5 +1,6 @@
 package uz.supersite.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -37,4 +38,11 @@ public final class Vacancy {
     private String image;
 
     private boolean isActive;
+
+    @JsonIgnore
+    @Transient
+    public String getImagePath() {
+        if(this.id == null) return "/images/image-thumbnail.png";
+        return "/vacancy-photos/" + this.id + "/" + this.image;
+    }
 }

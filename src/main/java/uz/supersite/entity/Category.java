@@ -101,6 +101,7 @@ public class Category {
 
 	public Category(String name) {
 		this.name = name;
+		this.alias = name;
 		this.image = "default.png";
 	}
 	

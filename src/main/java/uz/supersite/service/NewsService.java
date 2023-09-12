@@ -8,7 +8,7 @@ import uz.supersite.entity.News;
 import uz.supersite.exception.ItemNotFoundException;
 import uz.supersite.repository.AttachmentRepository;
 import uz.supersite.repository.NewsRepository;
-import uz.supersite.utils.ImageUtil;
+import uz.supersite.utils.FileUploadUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -74,7 +74,7 @@ public class NewsService {
 
         Attachment attachment = new Attachment();
         attachment.setFileType(file.getContentType());
-        attachment.setData(ImageUtil.compressImage(file.getBytes()));
+        attachment.setData(FileUploadUtil.compressImage(file.getBytes()));
         attachment.setFileName(file.getOriginalFilename());
         Attachment savedAttachment = attachmentRepository.save(attachment);
 

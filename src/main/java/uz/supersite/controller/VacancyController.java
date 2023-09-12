@@ -10,14 +10,17 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.entity.Vacancy;
 import uz.supersite.service.VacancyService;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/v1/vacancies")
 public class VacancyController {
     private final VacancyService vacancyService;
+
     public VacancyController(VacancyService vacancyService) {
         this.vacancyService = vacancyService;
+
     }
     @GetMapping()
     public ResponseEntity<?> getVacanciesByPage(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "5") int size){
@@ -35,8 +38,8 @@ public class VacancyController {
         List<Vacancy> vacanciesBySortTitle = vacancyService.getVacanciesBySortTitle(title,page,size);
         return ResponseEntity.ok(vacanciesBySortTitle);
     }
-    @PostMapping(value = "/add", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> add(@RequestPart @Valid Vacancy vacancy, @RequestPart MultipartFile file) {
+    @PostMapping(value = "/add", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> add(@Valid Vacancy vacancy, MultipartFile file) throws IOException {
         Vacancy addedVacancy = vacancyService.add(vacancy, file);
         return ResponseEntity.status(201).body(addedVacancy);
     }

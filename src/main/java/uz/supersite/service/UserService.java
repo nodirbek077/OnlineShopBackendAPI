@@ -5,9 +5,9 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.ResponseEntity;
 import uz.supersite.entity.User;
-import uz.supersite.exception.CustomPropertyValueException;
 import uz.supersite.exception.UserNotFoundException;
 import uz.supersite.repository.UserRepository;
 
@@ -15,42 +15,30 @@ import uz.supersite.repository.UserRepository;
 public class UserService {
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private CloudinaryImageService cloudinaryImageService;
 	public List<User> getAllUsers(){
 		return (List<User>) userRepository.findAll();
 	}
 
-	public User getUserById(Integer id) throws UserNotFoundException{
-
-			Optional<User> optionalUserById = userRepository.findById(id);
-			if (optionalUserById.isPresent()){
-                //				gotUser.setFirstName(user.getFirstName());
-//				gotUser.setLastName(user.getLastName());
-//				gotUser.setRoles(user.getRoles());
-//				gotUser.setPassword(user.getPassword());
-//				gotUser.setPhoneNumber(user.getPhoneNumber());
-//				gotUser.setEmail(user.getEmail());
-//				gotUser.setAddress(user.getAddress());
-//				gotUser.setPhotos(user.getPhotos());
-//				gotUser.setEnabled(user.isEnabled());
-				return optionalUserById.get();
-			}else {
-			    throw  new UserNotFoundException("Could not found any user with ID " + id);
-			}
+	public User getUserById(Integer id){
+			Optional<User> optionalUser = userRepository.findById(id);
+			return optionalUser.orElse(null);
 	}
-	public ResponseEntity addUser(User user) {
-		try {
 
+	public User addUser(User user, MultipartFile file) {
 			if(isEmailUnique(user.getId(), user.getEmail())){
 				user.setEmail(user.getEmail());
-			}else {
-				return new ResponseEntity("Email is already exist");
 			}
 
-			userRepository.save(user);
-			return new ResponseEntity(0,"Success");
-		} catch (Exception e) {
-			throw new CustomPropertyValueException("not-null property references a null or transient value");
-		}	
+			if (!file.isEmpty()){
+				String imageUrl = cloudinaryImageService.upload(file);
+				user.setPhotos(imageUrl);
+				return userRepository.save(user);
+			}else {
+				if(user.getPhotos().isEmpty()) user.setPhotos(null);
+				return userRepository.save(user);
+			}
 	}
 	
 	public ResponseEntity updateUser(User userInForm, Integer id) throws UserNotFoundException {

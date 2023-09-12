@@ -2,60 +2,22 @@ package uz.supersite.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uz.supersite.ResponseEntity;
 import uz.supersite.entity.Category;
-import uz.supersite.entity.User;
 import uz.supersite.exception.CategoryNotFoundException;
-import uz.supersite.exception.CustomPropertyValueException;
-import uz.supersite.exception.UserNotFoundException;
 import uz.supersite.repository.CategoryRepository;
 
 import java.util.*;
 
 @Service
 public class CategoryService {
-	private final CategoryRepository categoryRepository;
-
-	public CategoryService(CategoryRepository categoryRepository){
-		this.categoryRepository = categoryRepository;
-	}
+	@Autowired
+	private CategoryRepository categoryRepository;
 
 	public Category add(Category category){
 		if(category.getParent() == null){
 			return categoryRepository.save(category);
 		}
-return null;
-//		getCategoryByParentId();
-	}
-
-	private List<Category> getChildCategoriesByParentId() {
-		List<Category> categoryList = new ArrayList<>();
-		List<Category> rootCategoriesInDb = categoryRepository.findRootCategories();
-
-		for(Category category : rootCategoriesInDb){
-		    if(category.getParent() == null){
-
-				categoryList.add(Category.copyIdAndName(category));
-
-				Set<Category> children = category.getChildren();
-				for (Category subCategory : children){
-					categoryList.add(Category.copyIdAndName(subCategory.getId(), subCategory.getName()));
-					getSubCategories(categoryList, subCategory);
-				}
-
-			}
-		}
-
-		return categoryList;
-	}
-
-	private void getSubCategories(List<Category> categories, Category category){
-		Set<Category> children = category.getChildren();
-
-		for(Category subCategory : children){
-			categories.add(Category.copyIdAndName(subCategory.getId(), subCategory.getName()));
-			getSubCategories(categories, subCategory);
-		}
+        return null;
 	}
 
 	public List<Category> getRootCategories(){

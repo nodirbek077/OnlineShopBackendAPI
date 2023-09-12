@@ -5,21 +5,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.entity.Vacancy;
 import uz.supersite.repository.VacancyRepository;
-
+import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class VacancyService {
     public static final int VACANCIES_PER_PAGE = 10;
     private final VacancyRepository vacancyRepository;
-    public VacancyService(VacancyRepository vacancyRepository){
+    private final CloudinaryImageService cloudinaryImageService;
+    public VacancyService(VacancyRepository vacancyRepository, CloudinaryImageService cloudinaryImageService){
         this.vacancyRepository = vacancyRepository;
+        this.cloudinaryImageService = cloudinaryImageService;
     }
 
     public List<Vacancy> getVacancies(int page, int size) {
@@ -42,14 +42,15 @@ public class VacancyService {
         Page<Vacancy> vacancyAllByTitle = vacancyRepository.findAllByTitle(title, pageable);
         return vacancyAllByTitle.getContent();
     }
-    public Vacancy add(Vacancy vacancy, MultipartFile  file){
+    public Vacancy add(Vacancy vacancy, MultipartFile  file) throws IOException {
         if(!file.isEmpty()){
-            String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-            vacancy.setImage(fileName);
+            String fileUrl = cloudinaryImageService.upload(file);
+            vacancy.setImage(fileUrl);
+           return vacancyRepository.save(vacancy);
         }else {
             if(vacancy.getImage().isEmpty()) vacancy.setImage(null);
+           return vacancyRepository.save(vacancy);
         }
-        return vacancyRepository.save(vacancy);
     }
 
     public Vacancy getVacancy(Integer id) {
@@ -67,8 +68,8 @@ public class VacancyService {
             editingVacancy.setActive(vacancy.isActive());
             editingVacancy.setShortDescription(vacancy.getShortDescription());
 
-            String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-            editingVacancy.setImage(fileName);
+            String fileUrl = cloudinaryImageService.upload(file);
+            editingVacancy.setImage(fileUrl);
             return vacancyRepository.save(editingVacancy);
         }
         return null;

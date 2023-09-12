@@ -5,22 +5,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import uz.supersite.entity.Category;
 import uz.supersite.entity.News;
-import uz.supersite.exception.CategoryNotFoundException;
 import uz.supersite.exception.ItemNotFoundException;
-import uz.supersite.service.AttachmentService;
 import uz.supersite.service.NewsService;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/v1/news")
 public class NewsController {
     private final NewsService newsService;
-
     public NewsController(NewsService newsService) {
         this.newsService = newsService;
     }
