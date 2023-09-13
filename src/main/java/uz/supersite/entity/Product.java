@@ -8,7 +8,9 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.ManyToAny;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -47,6 +49,15 @@ public class Product {
 
     @Column(name = "in_stock")
     private boolean inStock;
+
+    private float cost;
+
+    private float price;
+
+    @ElementCollection
+    private List<String> sizes = new ArrayList<>();
+
+    private String color;
 
     @Column(name = "discount_percent")
     private float discountPercent;
