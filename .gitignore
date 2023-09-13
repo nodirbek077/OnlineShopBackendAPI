@@ -19,7 +19,7 @@ HELP.md
 *.iml
 *.ipr
 /target
-/src/test/java/uz/supersite
+#/src/test/java/uz/supersite
 
 ### NetBeans ###
 /nbproject/private/
