@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
+import uz.supersite.entity.Brand;
 import uz.supersite.repository.BrandRepository;
 import uz.supersite.repository.ProductRepository;
 
@@ -17,6 +18,6 @@ public class ProductRepositoryTest {
     private ProductRepository productRepository;
     @Test
     public void testCreateProduct(){
-
+        Brand brand = new Brand();
     }
 }
