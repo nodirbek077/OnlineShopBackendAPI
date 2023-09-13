@@ -54,19 +54,18 @@ public class Product {
 
     private float price;
 
-    @ElementCollection
-    private List<String> sizes = new ArrayList<>();
+    private String size;
 
     private String color;
 
     @Column(name = "discount_percent")
     private float discountPercent;
 
-    @ManyToAny
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToAny
+    @ManyToOne
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
