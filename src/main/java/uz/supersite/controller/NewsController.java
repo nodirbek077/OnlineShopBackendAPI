@@ -9,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.entity.News;
-import uz.supersite.entity.Vacancy;
-import uz.supersite.exception.ItemNotFoundException;
 import uz.supersite.service.NewsService;
 
 import java.io.IOException;
@@ -35,13 +33,13 @@ public class NewsController {
     }
 
     @PostMapping(value = "/add", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public HttpEntity<?> add(@Valid News news, MultipartFile file) {
+    public HttpEntity<?> add(@Valid News news, MultipartFile file) throws IOException {
         News addedNews = newsService.add(news, file);
         return ResponseEntity.status(201).body(addedNews);
     }
 
     @PutMapping(value = "/update/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public HttpEntity<?> update(@Valid News news, @RequestPart MultipartFile file, @PathVariable Integer id){
+    public HttpEntity<?> update(@Valid News news, @RequestPart MultipartFile file, @PathVariable Integer id) throws IOException {
         News editingNews = newsService.updateNews(id, news, file);
         return ResponseEntity.status(editingNews != null ? 202 : 409).body(editingNews);
     }
