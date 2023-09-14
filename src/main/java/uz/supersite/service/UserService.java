@@ -61,8 +61,12 @@ public class UserService {
    			 return userRepository.save(userInDb);
 		 }
 		 return null;
-
 	}
+
+	public void updateUserEnabledStatus(Integer id, boolean enabled){
+		userRepository.updateUserEnabledStatus(id, enabled);
+	}
+
 	public boolean delete(Integer id){
 		try {
 			userRepository.deleteById(id);

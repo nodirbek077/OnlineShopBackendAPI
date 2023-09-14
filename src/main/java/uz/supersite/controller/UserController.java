@@ -41,6 +41,12 @@ public class UserController {
 		return ResponseEntity.status(editedUser != null ? 202 : 409).body(editedUser);
 	}
 
+	@GetMapping("/{id}/enabled/{status}")
+	public uz.supersite.ResponseEntity updateUserEnabledStatus(@PathVariable Integer id, @PathVariable boolean status){
+		userService.updateUserEnabledStatus(id, status);
+		return new uz.supersite.ResponseEntity("Status updated");
+	}
+
 	@DeleteMapping("/delete/{id}")
 	public HttpEntity<?> deleteUser(@PathVariable Integer id){
 		boolean deleted = userService.delete(id);
