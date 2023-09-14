@@ -2,8 +2,8 @@ package uz.supersite.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.entity.Category;
-import uz.supersite.exception.CategoryNotFoundException;
 import uz.supersite.repository.CategoryRepository;
 
 import java.util.*;
@@ -13,19 +13,25 @@ public class CategoryService {
 	@Autowired
 	private CategoryRepository categoryRepository;
 
-	public Category add(Category category){
-		if(category.getParent() == null){
+	@Autowired
+	private CloudinaryImageServiceImpl cloudinaryImageService;
+
+	public Category add(Category category, MultipartFile file){
+		if(!file.isEmpty()){
+			String fileUrl = cloudinaryImageService.upload(file);
+			category.setImage(fileUrl);
+			category.setEnabled(true);
+			return categoryRepository.save(category);
+		}else {
+			if(category.getImage().isEmpty()) category.setImage(null);
 			return categoryRepository.save(category);
 		}
-        return null;
 	}
-
 	public List<Category> getRootCategories(){
 		return categoryRepository.findRootCategories();
 	}
 
 	public List<Category> list(){
-//		return (List<Category>) categoryRepository.findAll();
 		List<Category> rootCategories = categoryRepository.findRootCategories();
 		return getListHierarchicalCategories(rootCategories);
 	}
@@ -54,37 +60,43 @@ public class CategoryService {
 		}
 	}
 
-	public Category get(Integer id) throws CategoryNotFoundException {
+	public Category get(Integer id){
 		Optional<Category> optionalCategory = categoryRepository.findById(id);
-		if(optionalCategory.isPresent()){
-            return optionalCategory.get();
-		}else {
-			throw new CategoryNotFoundException("category not found id " + id);
-		}
+		return optionalCategory.orElse(null);
 	}
 
-	public Category update(Category categoryInRequest, Integer id) throws CategoryNotFoundException {
+	public Category update(Category categoryInRequest,MultipartFile file, Integer id) {
 		Optional<Category> categoryInDb = categoryRepository.findById(id);
 
-		if(categoryInDb.isEmpty()){
-			throw new CategoryNotFoundException("No category found with the given id: " + id);
-		}
+		if (categoryInDb.isPresent()){
+			Category editingCategory = categoryInDb.get();
 
-		Category category = categoryInDb.get();
-		category.setName(categoryInRequest.getName());
-		category.setAlias(categoryInRequest.getAlias());
-		category.setChildren(categoryInRequest.getChildren());
-		category.setImage(categoryInRequest.getImage());
-		category.setEnabled(categoryInRequest.isEnabled());
-		category.setParent(categoryInRequest.getParent());
-		return categoryRepository.save(category);
+			editingCategory.setName(categoryInRequest.getName());
+			editingCategory.setAlias(categoryInRequest.getAlias());
+			editingCategory.setChildren(categoryInRequest.getChildren());
+
+			String uploadUrl = cloudinaryImageService.upload(file);
+			editingCategory.setImage(uploadUrl);
+
+			editingCategory.setEnabled(categoryInRequest.isEnabled());
+			editingCategory.setParent(categoryInRequest.getParent());
+			return categoryRepository.save(editingCategory);
+		}
+		return null;
 	}
 
-	public void delete(Integer id) throws CategoryNotFoundException {
-		if(!categoryRepository.existsById(id)){
-			throw new CategoryNotFoundException("No category find with ID: " + id);
+	public void updateCategoryEnabledStatus(Integer id, boolean enabled){
+         categoryRepository.updateCategoryEnabledStatus(id, enabled);
+    }
+
+	public boolean delete(Integer id) {
+		try {
+			categoryRepository.deleteById(id);
+			return true;
+		}catch (Exception e){
+			return false;
 		}
-		categoryRepository.deleteById(id);
+
 	}
 
 

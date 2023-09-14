@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.entity.User;
-import uz.supersite.exception.UserNotFoundException;
 import uz.supersite.service.UserService;
 
 @RestController
@@ -32,19 +31,22 @@ public class UserController {
 		return ResponseEntity.status(user != null ? HttpStatus.OK : HttpStatus.CONFLICT).body(user);
     }
 	@PostMapping(value = "/add",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-	public HttpEntity<?> addUser(@Valid User user, MultipartFile file) {
+	public HttpEntity<?> addUser(@Valid User user, MultipartFile file){
 		User addedUser = userService.addUser(user, file);
 		return ResponseEntity.status(201).body(addedUser);
 	}
-	
-	@PutMapping("/update/{id}")
-	public HttpEntity<?> updateUser(@PathVariable Integer id, @RequestBody User user) throws UserNotFoundException {
-		return ResponseEntity.ok(userService.updateUser(user, id));
+	@PutMapping(value = "/update/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+	public HttpEntity<?> updateUser(@PathVariable Integer id, @Valid User user, MultipartFile file){
+		User editedUser = userService.updateUser(user, id, file);
+		return ResponseEntity.status(editedUser != null ? 202 : 409).body(editedUser);
 	}
 
-	@GetMapping("/delete/{id}")
-	public HttpEntity<?> deleteUser(@PathVariable(name = "id") Integer id) throws UserNotFoundException {
-		return ResponseEntity.ok(userService.delete(id));
+	@DeleteMapping("/delete/{id}")
+	public HttpEntity<?> deleteUser(@PathVariable Integer id){
+		boolean deleted = userService.delete(id);
+		if (deleted)
+			return ResponseEntity.noContent().build();
+		return ResponseEntity.notFound().build();
 	}
 }
 

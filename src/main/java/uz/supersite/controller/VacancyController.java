@@ -51,7 +51,7 @@ public class VacancyController {
     }
 
     @PutMapping(value = "/update/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public HttpEntity<?> editVacancy(@PathVariable Integer id, @RequestPart @Valid Vacancy vacancy, @RequestPart MultipartFile file){
+    public HttpEntity<?> editVacancy(@PathVariable Integer id, @Valid Vacancy vacancy, @RequestPart MultipartFile file){
         Vacancy editedVacancy = vacancyService.editVacancy(id, vacancy,file);
         return ResponseEntity.status(editedVacancy != null ? 202 : 409).body(editedVacancy);
     }

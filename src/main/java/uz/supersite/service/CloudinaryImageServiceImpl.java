@@ -17,7 +17,7 @@ public class CloudinaryImageServiceImpl implements CloudinaryImageService{
         try {
             return  this.cloudinary.uploader().upload(
                     file.getBytes(),
-                    Map.of("public_id", Objects.requireNonNull(file.getOriginalFilename()).replace(".png","")))
+                    Map.of("public_id", UUID.randomUUID().toString()))
                     .get("url")
                     .toString();
 

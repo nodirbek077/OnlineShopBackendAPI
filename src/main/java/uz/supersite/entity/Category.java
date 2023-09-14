@@ -48,6 +48,7 @@ public class Category {
 	private Category parent;
 
 	@OneToMany(mappedBy = "parent")
+
 	private Set<Category> children = new HashSet<>();
 
 	@Transient

@@ -13,6 +13,10 @@ public class ResponseEntity {
 		this.object = object;
 	}
 
+	public ResponseEntity(String message){
+		this.message = message;
+	}
+
 	public ResponseEntity(String message, Object object) {
 		this.message = message;
 		this.object = object;
@@ -23,7 +27,7 @@ public class ResponseEntity {
 		this.setCode(code);
 	}
 
-	public String getMessage() {
+    public String getMessage() {
 		return message;
 	}
 
