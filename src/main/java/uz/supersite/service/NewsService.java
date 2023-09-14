@@ -1,12 +1,16 @@
 package uz.supersite.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.entity.Attachment;
 import uz.supersite.entity.News;
+import uz.supersite.entity.Vacancy;
 import uz.supersite.exception.ItemNotFoundException;
-import uz.supersite.repository.AttachmentRepository;
 import uz.supersite.repository.NewsRepository;
 import uz.supersite.utils.FileUploadUtil;
 
@@ -16,81 +20,54 @@ import java.util.Optional;
 
 @Service
 public class NewsService {
-    private final NewsRepository newsRepository;
-    private final AttachmentRepository attachmentRepository;
 
-    public NewsService(NewsRepository newsRepository, AttachmentRepository attachmentRepository) {
-        this.newsRepository = newsRepository;
-        this.attachmentRepository = attachmentRepository;
+    @Autowired
+    private NewsRepository newsRepository;
+
+    @Autowired
+    private CloudinaryImageServiceImpl cloudinaryImageService;
+
+    public List<News> getNewsByPageable(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<News> newsPage = newsRepository.findAll(pageable);
+        return newsPage.getContent();
     }
 
-    public News add(String news, MultipartFile file) throws IOException {
-        News newsJson = new News();
-        Attachment attachment = new Attachment();
-        try{
-            ObjectMapper objectMapper = new ObjectMapper();
-             newsJson = objectMapper.readValue(news, News.class);
-
-        }catch (IOException e){
-            System.out.println("Error: " + e);
-        }
-        attachment.setFileType(file.getContentType());
-//        attachment.setData(file.getBytes());
-        attachment.setFileName(file.getOriginalFilename());
-        Attachment savedAttachment = attachmentRepository.save(attachment);
-//        newsJson.setAttachment(savedAttachment);
-        return newsRepository.save(newsJson);
-    }
-
-    public List<News> getAll() {
-        return (List<News>) newsRepository.findAll();
-    }
-
-    public News get(Integer id) throws ItemNotFoundException {
+    public News get(Integer id) {
         Optional<News> optionalCategory = newsRepository.findById(id);
-        if(optionalCategory.isPresent()){
-            return optionalCategory.get();
-        }else {
-            throw new ItemNotFoundException("Category not found with id " + id);
-        }
+        return optionalCategory.orElse(null);
     }
 
-    public News update(String newsInRequest, MultipartFile file, Integer id) throws ItemNotFoundException, IOException {
-        Optional<News> newsInDb = newsRepository.findById(id);
-
-        if(newsInDb.isEmpty()){
-            throw new ItemNotFoundException("No category found with the given id: " + id);
+    public News add(News news, MultipartFile file) {
+        if(!file.isEmpty()){
+            news.setImage(cloudinaryImageService.upload(file));
+        }else {
+            if(news.getImage().isEmpty()) news.setImage(null);
         }
-
-        News news = newsInDb.get();
-
-        try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            news = objectMapper.readValue(newsInRequest, News.class);
-
-        }catch (IOException e){
-            System.out.println("Error: " + e);
-        }
-
-        Attachment attachment = new Attachment();
-        attachment.setFileType(file.getContentType());
-        attachment.setData(FileUploadUtil.compressImage(file.getBytes()));
-        attachment.setFileName(file.getOriginalFilename());
-        Attachment savedAttachment = attachmentRepository.save(attachment);
-
-//        news.setAttachment(savedAttachment);
-        news.setTitle(news.getTitle());
-        news.setDescription(news.getDescription());
-        news.setLink(news.getLink());
-        news.setCreatedAt(news.getCreatedAt());
-
         return newsRepository.save(news);
     }
 
-    public void delete(Integer id) throws ItemNotFoundException {
-        if(!newsRepository.existsById(id)){
-            throw new ItemNotFoundException("No news find with ID: " + id);
+    public News updateNews(Integer id, News news, MultipartFile file) {
+        Optional<News> optionalNews = newsRepository.findById(id);
+        if (optionalNews.isPresent()){
+            News editingNews = optionalNews.get();
+            editingNews.setTitle(news.getTitle());
+            editingNews.setDescription(news.getDescription());
+            editingNews.setLink(news.getLink());
+            editingNews.setActive(news.isActive());
+            String fileUrl = cloudinaryImageService.upload(file);
+            editingNews.setImage(fileUrl);
+            return newsRepository.save(editingNews);
         }
-        newsRepository.deleteById(id);
+        return null;
+    }
+
+    public boolean delete(Integer id){
+        try {
+            newsRepository.deleteById(id);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 }

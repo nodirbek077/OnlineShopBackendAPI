@@ -39,7 +39,7 @@ public class VacancyController {
         return ResponseEntity.ok(vacanciesBySortTitle);
     }
     @PostMapping(value = "/add", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> add(@Valid Vacancy vacancy, MultipartFile file) throws IOException {
+    public ResponseEntity<?> add(@Valid Vacancy vacancy, MultipartFile file) {
         Vacancy addedVacancy = vacancyService.add(vacancy, file);
         return ResponseEntity.status(201).body(addedVacancy);
     }

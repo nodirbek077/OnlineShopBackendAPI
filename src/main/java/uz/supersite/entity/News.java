@@ -8,9 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,18 +28,23 @@ public class News {
     @Column(nullable = false, unique = true)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 4096)
     private String description;
 
     @Column(unique = true)
     @JsonIgnore
     private String link;
 
-    @Column(length = 128, nullable = false)
-    @JsonProperty("image")
+    @Column(length = 128)
     private String image;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private String createdAt;
+    @Column(name = "created_by", nullable = false, updatable = false)
+    private Date createdBy;
+
+    @UpdateTimestamp
+    @Column(name = "updated_by")
+    private Date updatedBy;
+
+    private boolean isActive;
 }

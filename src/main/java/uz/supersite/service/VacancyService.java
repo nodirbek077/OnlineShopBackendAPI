@@ -42,15 +42,13 @@ public class VacancyService {
         Page<Vacancy> vacancyAllByTitle = vacancyRepository.findAllByTitle(title, pageable);
         return vacancyAllByTitle.getContent();
     }
-    public Vacancy add(Vacancy vacancy, MultipartFile  file) throws IOException {
+    public Vacancy add(Vacancy vacancy, MultipartFile  file) {
         if(!file.isEmpty()){
-            String fileUrl = cloudinaryImageService.upload(file);
-            vacancy.setImage(fileUrl);
-           return vacancyRepository.save(vacancy);
+            vacancy.setImage(cloudinaryImageService.upload(file));
         }else {
             if(vacancy.getImage().isEmpty()) vacancy.setImage(null);
-           return vacancyRepository.save(vacancy);
         }
+        return vacancyRepository.save(vacancy);
     }
 
     public Vacancy getVacancy(Integer id) {
