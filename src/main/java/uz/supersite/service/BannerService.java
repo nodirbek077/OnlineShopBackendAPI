@@ -7,10 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.entity.Banner;
-import uz.supersite.entity.Brand;
-import uz.supersite.entity.News;
 import uz.supersite.repository.BannerRepository;
-import uz.supersite.utils.FileUploadUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,15 +36,10 @@ public class BannerService {
     public Banner add(Banner banner, MultipartFile file) throws IOException {
         if(!file.isEmpty()){
             banner.setImage(cloudinaryImageService.upload(file));
-            Banner savedBanner = bannerRepository.save(banner);
-            String uploadDir = "banner-photos/" + savedBanner.getId();
-            FileUploadUtil.cleanDir(uploadDir);
-            FileUploadUtil.saveFile(uploadDir, file.getOriginalFilename(), file);
         }else {
             if(banner.getImage().isEmpty()) banner.setImage(null);
-            bannerRepository.save(banner);
         }
-        return banner;
+        return bannerRepository.save(banner);
     }
 
     public Banner updateBanner(Integer id, Banner bannerInRequest, MultipartFile file) throws IOException {
@@ -59,13 +51,7 @@ public class BannerService {
 
             String fileUrl = cloudinaryImageService.upload(file);
             editingBanner.setImage(fileUrl);
-            Banner savedBanner = bannerRepository.save(editingBanner);
-
-            String uploadDir = "banner-photos/" + savedBanner.getId();
-            FileUploadUtil.cleanDir(uploadDir);
-            FileUploadUtil.saveFile(uploadDir, file.getOriginalFilename(), file);
-
-            return savedBanner;
+            return bannerRepository.save(editingBanner);
         }
         return null;
     }

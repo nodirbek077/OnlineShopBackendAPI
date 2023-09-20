@@ -7,15 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.entity.Brand;
-import uz.supersite.entity.Category;
 import uz.supersite.repository.BrandRepository;
-import uz.supersite.utils.FileUploadUtil;
 
-import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class BrandService {
@@ -37,37 +32,25 @@ public class BrandService {
         return optionalCategory.orElse(null);
     }
 
-    public Brand add(Brand brand, MultipartFile file) throws IOException {
+    public Brand add(Brand brand, MultipartFile file) {
         if(!file.isEmpty()){
             brand.setLogo(cloudinaryImageService.upload(file));
-            Brand savedBrand = brandRepository.save(brand);
-            String uploadDir = "brand-photos/" + savedBrand.getId();
-            FileUploadUtil.cleanDir(uploadDir);
-            FileUploadUtil.saveFile(uploadDir, file.getOriginalFilename(), file);
         }else {
             if(brand.getLogo().isEmpty()) brand.setLogo(null);
-            brandRepository.save(brand);
         }
-        return brand;
+        return brandRepository.save(brand);
     }
 
-    public Brand updateBrand(Integer id, Brand brandInRequest, MultipartFile file) throws IOException {
+    public Brand updateBrand(Integer id, Brand brandInRequest, MultipartFile file) {
         Optional<Brand> optionalBrand = brandRepository.findById(id);
         if (optionalBrand.isPresent()){
             Brand editingBrand = optionalBrand.get();
-            editingBrand.setNameUz(brandInRequest.getNameUz());
-            editingBrand.setNameRu(brandInRequest.getNameRu());
-            editingBrand.setNameEn(brandInRequest.getNameEn());
+            editingBrand.setName(brandInRequest.getName());
             editingBrand.setCategories(brandInRequest.getCategories());
 
             String fileUrl = cloudinaryImageService.upload(file);
             editingBrand.setLogo(fileUrl);
-
-            Brand savedBrand = brandRepository.save(editingBrand);
-            String uploadDir = "brand-photos/" + savedBrand.getId();
-            FileUploadUtil.cleanDir(uploadDir);
-            FileUploadUtil.saveFile(uploadDir, file.getOriginalFilename(), file);
-            return savedBrand;
+            return brandRepository.save(editingBrand);
         }
         return null;
     }

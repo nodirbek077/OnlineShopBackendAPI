@@ -7,19 +7,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.web.multipart.MultipartFile;
-import uz.supersite.ResponseEntity;
+import uz.supersite.entity.Role;
 import uz.supersite.entity.User;
-import uz.supersite.entity.Vacancy;
 import uz.supersite.exception.CustomPropertyValueException;
-import uz.supersite.exception.ItemNotFoundException;
-import uz.supersite.exception.UserNotFoundException;
+import uz.supersite.repository.RoleRepository;
 import uz.supersite.repository.UserRepository;
 
 @Service
 @Transactional
 public class UserService {
+
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private RoleRepository roleRepository;
 
 	@Autowired
 	private CloudinaryImageService cloudinaryImageService;
@@ -37,12 +39,13 @@ public class UserService {
 		if(!isEmailUnique(user.getId(), user.getEmail())){
 			throw new CustomPropertyValueException("User with " + user.getEmail() + " is already exist!");
 		}
-			String imageUrl = cloudinaryImageService.upload(file);
-			user.setPhotos(imageUrl);
-			user.setEnabled(true);
-			return userRepository.save(user);
+
+		String imageUrl = cloudinaryImageService.upload(file);
+		user.setPhotos(imageUrl);
+		user.setEnabled(true);
+		return userRepository.save(user);
 	}
-	
+
 	public User updateUser(User userInForm, Integer id, MultipartFile file) {
 		 Optional<User> optionalUser = userRepository.findById(id);
 

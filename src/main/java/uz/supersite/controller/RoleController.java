@@ -12,7 +12,7 @@ import uz.supersite.service.RoleService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/roles")
+@RequestMapping("/api/v1/roles")
 public class RoleController {
 	@Autowired
 	private RoleService roleService;

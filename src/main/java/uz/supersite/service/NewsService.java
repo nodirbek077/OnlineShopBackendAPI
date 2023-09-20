@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.entity.News;
 import uz.supersite.repository.NewsRepository;
-import uz.supersite.utils.FileUploadUtil;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,23 +32,17 @@ public class NewsService {
         return optionalCategory.orElse(null);
     }
 
-    public News add(News news, MultipartFile file) throws IOException {
+    public News add(News news, MultipartFile file) {
         if(!file.isEmpty()){
             news.setImage(cloudinaryImageService.upload(file));
             news.setLink(news.getLink());
-            News savedNews = newsRepository.save(news);
-
-            String uploadDir = "news-photos/" + savedNews.getId();
-            FileUploadUtil.cleanDir(uploadDir);
-            FileUploadUtil.saveFile(uploadDir, file.getOriginalFilename(), file);
         }else {
             if(news.getImage().isEmpty()) news.setImage(null);
-            newsRepository.save(news);
         }
         return newsRepository.save(news);
     }
 
-    public News updateNews(Integer id, News news, MultipartFile file) throws IOException {
+    public News updateNews(Integer id, News news, MultipartFile file) {
         Optional<News> optionalNews = newsRepository.findById(id);
         if (optionalNews.isPresent()){
             News editingNews = optionalNews.get();
@@ -60,12 +52,7 @@ public class NewsService {
             editingNews.setActive(news.isActive());
             String fileUrl = cloudinaryImageService.upload(file);
             editingNews.setImage(fileUrl);
-
-            News savedNews = newsRepository.save(editingNews);
-            String uploadDir = "news-photos/" + savedNews.getId();
-            FileUploadUtil.cleanDir(uploadDir);
-            FileUploadUtil.saveFile(uploadDir, file.getOriginalFilename(), file);
-            return savedNews;
+            return newsRepository.save(editingNews);
         }
         return null;
     }

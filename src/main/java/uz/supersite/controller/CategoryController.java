@@ -9,12 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.entity.Category;
-import uz.supersite.entity.Vacancy;
-import uz.supersite.exception.CategoryNotFoundException;
 import uz.supersite.service.CategoryService;
 
-import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 @RestController

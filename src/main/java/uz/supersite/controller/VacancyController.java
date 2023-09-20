@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.supersite.entity.Vacancy;
 import uz.supersite.service.VacancyService;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,7 +19,6 @@ public class VacancyController {
 
     public VacancyController(VacancyService vacancyService) {
         this.vacancyService = vacancyService;
-
     }
     @GetMapping()
     public ResponseEntity<?> getVacanciesByPage(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "5") int size){
@@ -63,5 +61,4 @@ public class VacancyController {
             return ResponseEntity.noContent().build();
         return ResponseEntity.notFound().build();
     }
-
 }

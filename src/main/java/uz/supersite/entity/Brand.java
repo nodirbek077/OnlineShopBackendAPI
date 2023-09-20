@@ -21,13 +21,7 @@ public class Brand  {
     private Integer id;
 
     @Column(nullable = false, length = 45, unique = true)
-    private String nameUz;
-
-    @Column(nullable = false, length = 45, unique = true)
-    private String nameRu;
-
-    @Column(nullable = false, length = 45, unique = true)
-    private String nameEn;
+    private String name;
 
     @Column(nullable = false, length = 128)
     private String logo;
@@ -41,10 +35,8 @@ public class Brand  {
     @JsonIgnore
     private Set<Category> categories = new HashSet<>();
 
-    public Brand(String nameEn, String nameUz, String nameRu){
-        this.nameEn = nameEn;
-        this.nameUz = nameUz;
-        this.nameRu = nameRu;
+    public Brand(String name){
+        this.name = name;
         this.logo = "default-logo.png";
     }
 }

@@ -9,14 +9,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.springframework.security.core.GrantedAuthority;
+
 @Entity
 @Table(name = "roles")
-public class Role{
+public class Role implements GrantedAuthority {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(length = 40, nullable = false, unique = true)
+	@Column(length = 50, nullable = false, unique = true)
 	private String name;
 	
 	@Column(length = 150, nullable = false)
@@ -81,6 +83,11 @@ public class Role{
 
 	@Override
 	public String toString() {
+		return this.name;
+	}
+
+	@Override
+	public String getAuthority() {
 		return this.name;
 	}
 }

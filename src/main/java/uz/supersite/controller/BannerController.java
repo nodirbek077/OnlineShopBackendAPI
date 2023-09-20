@@ -19,8 +19,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/v1/banners")
 public class BannerController {
+
     @Autowired
     private BannerService bannerService;
+
     @GetMapping()
     public ResponseEntity<?> getBannersByPage(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size){
         List<Banner> brandsList = bannerService.getBannerByPageable(page,size);

@@ -1,5 +1,6 @@
 package uz.supersite.entity;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,18 +8,20 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "users")
-public class User{
+public class User implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	@Column(length = 128, nullable = false, unique = true)
+	@Column(length = 50, nullable = false, unique = true)
 	private String email;
+	@JsonIgnore
 	@Column(length = 64, nullable = false)
 	private String password;
 	@NotBlank(message = "First Name cannot be left blank")
@@ -43,7 +46,7 @@ public class User{
 	private String photos;
 	private boolean enabled;
 	@JsonIgnore
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 	public User(String email, String password, String firstName, String lastName) {
@@ -60,6 +63,11 @@ public class User{
 		this.address = address;
 		this.phoneNumber = phoneNumber;
 		this.enabled = enabled;
+	}
+
+	public User(String email, String password) {
+		this.email = email;
+		this.password = password;
 	}
 	public void addRole(Role role) {
 		this.roles.add(role);
@@ -83,8 +91,38 @@ public class User{
 		this.email = email;
 	}
 
+	@JsonIgnore
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return roles;
+	}
+
 	public String getPassword() {
 		return password;
+	}
+
+	@JsonIgnore
+	@Override
+	public String getUsername() {
+		return null;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
 	}
 
 	public void setPassword(String password) {

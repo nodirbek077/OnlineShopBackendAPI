@@ -8,7 +8,10 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import uz.supersite.entity.User;
 
+import java.util.Optional;
+
 public interface UserRepository extends CrudRepository<User,Integer>, PagingAndSortingRepository<User, Integer> {
+    Optional<User> findByEmail(String email);
     @Query("SELECT u FROM User u WHERE u.email = :email")
     User getUserByEmail(@Param("email") String email);
 
