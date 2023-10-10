@@ -1,6 +1,7 @@
 package uz.supersite.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
@@ -9,6 +10,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
@@ -23,7 +26,16 @@ public class Role implements GrantedAuthority {
 	
 	@Column(length = 150, nullable = false)
 	private String description;
-	
+
+	@CreationTimestamp
+	@Column(nullable = false,updatable = false)
+	private Date createdAt;
+
+
+	@UpdateTimestamp
+	@Column(nullable = false)
+	private Date updatedAt;
+
 	public Role() {
 	}
 	
@@ -62,6 +74,22 @@ public class Role implements GrantedAuthority {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 	@Override
