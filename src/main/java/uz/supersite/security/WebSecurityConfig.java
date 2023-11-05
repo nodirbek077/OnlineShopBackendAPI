@@ -51,8 +51,8 @@ public class WebSecurityConfig {
                 ))
 
                 .authorizeHttpRequests(reg -> reg
-                        .requestMatchers("/auth/login")
-                        .permitAll()
+                        .requestMatchers("/api/v1/auth/register/**").permitAll()
+                        .requestMatchers("/api/v1/auth/login", "/api/**").permitAll()
                         .requestMatchers("/products").hasAnyAuthority("ROLE_EDITOR","ROLE_CUSTOMER")
                         .requestMatchers("/products/add").hasAnyAuthority("ROLE_EDITOR")
                         .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_ADMIN")

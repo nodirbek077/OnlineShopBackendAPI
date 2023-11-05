@@ -1,9 +1,7 @@
 package uz.supersite.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,37 +18,12 @@ import uz.supersite.repository.VerificationTokenRepository;
 import uz.supersite.reqAndRes.LoginRequest;
 import uz.supersite.reqAndRes.RegisterRequest;
 import uz.supersite.service.AuthService;
-
-import java.text.ParseException;
 import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-
-//    @Autowired
-//    private AuthenticationManager authenticationManager;
-//
-//    @Autowired
-//    private JwtTokenUtil jwtTokenUtil;
-//    @PostMapping("/auth/login")
-//    public ResponseEntity<?> login(@RequestBody @Valid AuthRequest request){
-//        try {
-//            Authentication  authentication = authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-//            );
-//
-//            User user = (User) authentication.getPrincipal();
-//
-//            String accessToken = jwtTokenUtil.generateAccessToken(user);
-//            AuthResponse response = new AuthResponse(user.getEmail(),accessToken);
-//            return ResponseEntity.ok(response);
-//        }catch (BadCredentialsException e){
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//    }
-
     private final AuthService authService;
     private final JwtTokenUtil jwtTokenUtil;
     private final ApplicationEventPublisher publisher;

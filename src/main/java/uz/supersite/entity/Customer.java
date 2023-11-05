@@ -30,19 +30,19 @@ public class Customer implements UserDetails {
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
-    @Column(name = "phone_number", nullable = false, length = 15)
+    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "address", nullable = false, length = 80)
+    @Column(name = "address")
     private String address;
 
-    @Column(nullable = false, length = 45)
+    @Column(name = "city")
     private String city;
 
-    @Column(nullable = false, length = 45)
+    @Column(name = "state")
     private String state;
 
-    @Column(name = "postal_code",nullable = false, length = 10)
+    @Column(name = "postal_code")
     private String postalCode;
 
     @Column(name = "verification_code", length = 64)
